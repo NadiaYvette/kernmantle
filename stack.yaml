@@ -17,7 +17,8 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-16.11
+resolver: lts-24.62
+allow-newer: true
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -43,9 +44,9 @@ extra-deps:
 - cas-store-1.1.0
 - sqlite-simple-0.4.18.0
 - store-0.7.4
-- vinyl-0.12.2
+
 - direct-sqlite-2.3.26
-- store-core-0.4.4.2
+
 - th-utilities-0.2.4.0
 # - git: https://github.com/haskell-numerics/hmatrix-sundials
 #   commit: 8333309c82b737247d3c14e66ae245febb1a6ab0 # Needs sundials 4.1.0
