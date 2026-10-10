@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.38.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d1c11eb8ed7a64f130402199c56ee67fc4f5ca738808a5c3870b54c150f01bbf
+-- hash: f251266e9153611d38679ba2c8a4531840cdf10170940e70f26bdcd49fde73b2
 
 name:           kernmantle
 version:        0.1.0.0
@@ -36,63 +36,76 @@ library
       Paths_kernmantle
   hs-source-dirs:
       src
+  ghc-options: -fplugin=Polytropos.Plugin
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , polytropos-core
+    , polytropos-plugin
+    , primitive
     , profunctors >=5.5.2
     , safe-exceptions
     , transformers
-    , vinyl >=0.11
   default-language: Haskell2010
 
 executable ex1
   main-is: examples/Ex1.hs
   other-modules:
       Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
   build-depends:
       base >=4.7 && <5
     , bifunctors
     , kernmantle
+    , polytropos-core
+    , polytropos-plugin
+    , primitive
     , profunctors >=5.5.2
     , safe-exceptions
     , transformers
-    , vinyl >=0.11
   default-language: Haskell2010
 
 executable exBypass
   main-is: examples/ExBypass.hs
   other-modules:
       Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
   build-depends:
       base >=4.7 && <5
     , bifunctors
     , kernmantle
+    , polytropos-core
+    , polytropos-plugin
+    , primitive
     , profunctors >=5.5.2
     , safe-exceptions
     , transformers
-    , vinyl >=0.11
   default-language: Haskell2010
 
 executable exCli
   main-is: examples/ExCli.hs
   other-modules:
       Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
   build-depends:
       base >=4.7 && <5
     , bifunctors
     , bytestring
     , kernmantle
     , optparse-applicative
+    , polytropos-core
+    , polytropos-plugin
+    , primitive
     , profunctors
     , safe-exceptions
     , transformers
-    , vinyl >=0.11
   default-language: Haskell2010
 
 executable exLenses
   main-is: examples/ExLenses.hs
   other-modules:
       Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
   build-depends:
       aeson
     , base >=4.7 && <5
@@ -100,9 +113,11 @@ executable exLenses
     , kernmantle
     , lens
     , lens-aeson
+    , polytropos-core
+    , polytropos-plugin
+    , primitive
     , profunctors
     , safe-exceptions
     , transformers
     , unordered-containers
-    , vinyl >=0.11
   default-language: Haskell2010

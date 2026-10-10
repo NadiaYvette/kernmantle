@@ -1,0 +1,9 @@
+packages:
+  kernmantle
+  batteries
+  /home/nyc/src/polytropos/packages/polytropos-core/*.cabal
+  /home/nyc/src/polytropos/packages/polytropos-plugin/*.cabal
+
+allow-newer: *
+
+jobs: $ncpus

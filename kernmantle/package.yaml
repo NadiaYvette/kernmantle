@@ -19,9 +19,14 @@ dependencies:
 - base >= 4.7 && < 5
 - bifunctors
 - profunctors >= 5.5.2 # Needed to have the whole set of Cayley instances
-- vinyl >= 0.11
 - transformers
 - safe-exceptions
+- primitive
+- polytropos-core
+- polytropos-plugin
+
+ghc-options:
+- -fplugin=Polytropos.Plugin
 
 library:
   source-dirs: src
