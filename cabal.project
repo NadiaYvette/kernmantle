@@ -1,8 +1,14 @@
 packages:
   kernmantle
   batteries
-  /home/nyc/src/polytropos/packages/polytropos-core/*.cabal
-  /home/nyc/src/polytropos/packages/polytropos-plugin/*.cabal
+
+source-repository-package
+  type: git
+  location: https://github.com/NadiaYvette/polytropos.git
+  tag: b24592f41cf5bc243df020db35af0b9e3c39487f
+  subdir:
+    packages/polytropos-core
+    packages/polytropos-plugin
 
 allow-newer: *
 
