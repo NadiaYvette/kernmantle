@@ -5,10 +5,11 @@ packages:
 source-repository-package
   type: git
   location: https://github.com/NadiaYvette/polytropos.git
-  tag: b24592f41cf5bc243df020db35af0b9e3c39487f
+  tag: f35f551236643e5799edeb7f4ff58c9ea09354fe
   subdir:
     packages/polytropos-core
     packages/polytropos-plugin
+    packages/polytropos-reader-soup
 
 allow-newer: *
 

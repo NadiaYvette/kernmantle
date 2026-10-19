@@ -24,6 +24,7 @@ dependencies:
 - primitive
 - polytropos-core
 - polytropos-plugin
+- polytropos-reader-soup
 
 ghc-options:
 - -fplugin=Polytropos.Plugin
@@ -56,3 +57,7 @@ executables:
       - unordered-containers
       - aeson
       - lens-aeson
+  exSoup:
+    main: examples/ExSoup.hs
+    dependencies:
+      - kernmantle
