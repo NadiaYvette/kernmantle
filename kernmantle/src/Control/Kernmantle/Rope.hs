@@ -66,6 +66,9 @@ module Control.Kernmantle.Rope
   , (&)
   , mkRope
   , runRope
+    -- * Polytropos Variant Routing and Fusion
+  , module Control.Kernmantle.Rope.Variant
+  , module Control.Kernmantle.Rope.Fusion
   )
 where
 
@@ -91,7 +94,9 @@ import Prelude hiding (id, (.))
 
 import Control.Kernmantle.Arrow
 import Control.Kernmantle.Error
+import Control.Kernmantle.Rope.Fusion
 import Control.Kernmantle.Rope.Internal
+import Control.Kernmantle.Rope.Variant
 import Polytropos.Core (FieldIndex (..), SubRow (..))
 
 -- | Label type for OverloadedLabels
@@ -101,38 +106,6 @@ data Label (l :: Symbol) = Label
 instance (l ~ l') => IsLabel l (Label l') where
   fromLabel = Label
 
--- | 'Rope' is a free arrow built out of _several_ binary effects.
-newtype Rope (record::RopeRec) (mantle::[Strand]) (core::BinEff) a b =
-  Rope { getRopeRunner :: RopeRunner record mantle core core a b }
-
-  deriving ( Category
-           , Arrow, ArrowChoice, ArrowLoop, ArrowZero, ArrowPlus
-           , Profunctor, Strong, Choice, Closed, Costrong, Cochoice
-           , Mapping, Traversing
-           , ThrowEffect ex, TryEffect ex
-           , SieveTrans f
-           , HasAutoIdent eff
-           , Functor, Bifunctor, Biapplicative
-           )
-
-runRope :: Rope record mantle core a b -> record (Weaver core) mantle -> core a b
-runRope (Rope (RopeRunner f)) = f
-{-# INLINE runRope #-}
-
-mkRope :: (record (Weaver core) mantle -> core a b) -> Rope record mantle core a b
-mkRope = Rope . RopeRunner
-{-# INLINE mkRope #-}
-
--- | Applies a function on the core action of the Rope
-mapRopeCore :: (core a b -> core a' b') -> Rope r m core a b -> Rope r m core a' b'
-mapRopeCore f rope = mkRope $ f . runRope rope
-{-# INLINE mapRopeCore #-}
-
--- | A 'Rope' that is "tight". Under Polytropos, tight and loose ropes are both backed by flat arrays.
-type TightRope = Rope Rec
-
--- | A 'Rope' that is "loose".
-type LooseRope = Rope Rec
 
 -- | Tells that a strand of effects '(l,eff) is present in the rope
 type family InRope l (eff :: BinEff) rope where

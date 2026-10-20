@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e8ec366ee7c5f897397c8e132ccae3086f2164a1f172b13339cbc4ca1f4d161e
+-- hash: e5a907a944ab09f5a90508fb8533b0b098b1b3ba9334f0564fb68a523357a82c
 
 name:           kernmantle
 version:        0.1.0.0
@@ -29,8 +29,10 @@ library
       Control.Kernmantle.Arrow
       Control.Kernmantle.Error
       Control.Kernmantle.Rope
+      Control.Kernmantle.Rope.Fusion
       Control.Kernmantle.Rope.Internal
       Control.Kernmantle.Rope.ReaderSoup
+      Control.Kernmantle.Rope.Variant
       Data.Profunctor.EffFunctor
       Data.Profunctor.Trans
   other-modules:
@@ -41,8 +43,10 @@ library
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , kan-extensions
     , polytropos-core
     , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -58,9 +62,11 @@ executable ex1
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , kan-extensions
     , kernmantle
     , polytropos-core
     , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -76,9 +82,11 @@ executable exBypass
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , kan-extensions
     , kernmantle
     , polytropos-core
     , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -95,10 +103,12 @@ executable exCli
       base >=4.7 && <5
     , bifunctors
     , bytestring
+    , kan-extensions
     , kernmantle
     , optparse-applicative
     , polytropos-core
     , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors
@@ -115,11 +125,13 @@ executable exLenses
       aeson
     , base >=4.7 && <5
     , bifunctors
+    , kan-extensions
     , kernmantle
     , lens
     , lens-aeson
     , polytropos-core
     , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors
@@ -136,9 +148,31 @@ executable exSoup
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , kan-extensions
     , kernmantle
     , polytropos-core
     , polytropos-plugin
+    , polytropos-profunctors
+    , polytropos-reader-soup
+    , primitive
+    , profunctors >=5.5.2
+    , safe-exceptions
+    , transformers
+  default-language: Haskell2010
+
+executable exVariant
+  main-is: examples/ExVariant.hs
+  other-modules:
+      Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , bifunctors
+    , kan-extensions
+    , kernmantle
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2

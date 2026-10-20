@@ -25,6 +25,8 @@ dependencies:
 - polytropos-core
 - polytropos-plugin
 - polytropos-reader-soup
+- polytropos-profunctors
+- kan-extensions
 
 ghc-options:
 - -fplugin=Polytropos.Plugin
@@ -61,3 +63,9 @@ executables:
     main: examples/ExSoup.hs
     dependencies:
       - kernmantle
+  exVariant:
+    main: examples/ExVariant.hs
+    dependencies:
+      - kernmantle
+      - polytropos-core
+      - polytropos-profunctors

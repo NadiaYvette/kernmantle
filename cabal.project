@@ -1,15 +1,10 @@
 packages:
   kernmantle
   batteries
-
-source-repository-package
-  type: git
-  location: https://github.com/NadiaYvette/polytropos.git
-  tag: 733e7b6f6d7bfa69bcd2417e4d520420a6b745ac
-  subdir:
-    packages/polytropos-core
-    packages/polytropos-plugin
-    packages/polytropos-reader-soup
+  /home/nyc/src/polytropos/packages/polytropos-core
+  /home/nyc/src/polytropos/packages/polytropos-plugin
+  /home/nyc/src/polytropos/packages/polytropos-reader-soup
+  /home/nyc/src/polytropos/packages/polytropos-profunctors
 
 allow-newer: *
 

@@ -1,4 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
@@ -31,6 +33,7 @@ import Data.Profunctor.Cayley
 import Data.Profunctor.EffFunctor
 import Data.Profunctor.Monad
 import Data.Profunctor.Traversing
+import Data.Profunctor.Closed (Closed)
 import Data.Profunctor.Trans
 import GHC.Exts (Any)
 import GHC.TypeLits
@@ -223,6 +226,39 @@ instance EffProfunctor (RopeRunner Rec m) where
   effdimap f g (RopeRunner run) = RopeRunner $
     g . run . rmap (mapWeaverInterp f)
   {-# INLINE effdimap #-}
+
+-- | 'Rope' is a free arrow built out of _several_ binary effects.
+newtype Rope (record::RopeRec) (mantle::[Strand]) (core::BinEff) a b =
+  Rope { getRopeRunner :: RopeRunner record mantle core core a b }
+
+  deriving ( Category
+           , Arrow, ArrowChoice, ArrowLoop, ArrowZero, ArrowPlus
+           , Profunctor, Strong, Choice, Closed, Costrong, Cochoice
+           , Mapping, Traversing
+           , ThrowEffect ex, TryEffect ex
+           , SieveTrans f
+           , HasAutoIdent eff
+           , Functor, Bifunctor, Biapplicative
+           )
+
+runRope :: Rope record mantle core a b -> record (Weaver core) mantle -> core a b
+runRope (Rope (RopeRunner f)) = f
+{-# INLINE runRope #-}
+
+mkRope :: (record (Weaver core) mantle -> core a b) -> Rope record mantle core a b
+mkRope = Rope . RopeRunner
+{-# INLINE mkRope #-}
+
+-- | Applies a function on the core action of the Rope
+mapRopeCore :: (core a b -> core a' b') -> Rope r m core a b -> Rope r m core a' b'
+mapRopeCore f rope = mkRope $ f . runRope rope
+{-# INLINE mapRopeCore #-}
+
+-- | A 'Rope' that is "tight". Under Polytropos, tight and loose ropes are both backed by flat arrays.
+type TightRope = Rope Rec
+
+-- | A 'Rope' that is "loose".
+type LooseRope = Rope Rec
 
 -- | Splits a 'RopeRunner' in two parts
 splitRopeRunner :: RopeRunner Rec (mantle1 ++ mantle2) interp core
