@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.38.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4c9ca63e1ec6c06ad7658e94f859a38fd4c3b74c2ac2a2a74d7a1d48e6215086
+-- hash: 342fdbbb852fe164109e1dd370c6f0041cc464ab17f5a49a81638abeb65bc848
 
 name:           kernmantle-caching
-version:        0.1.0.0
+version:        0.1.0.1
 synopsis:       Cache parts of a Kernmantle pipeline via cas-store
 description:    Please see the README on GitHub at <https://github.com/YPares/kernmantle#readme>
 category:       Control

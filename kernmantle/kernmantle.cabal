@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e5a907a944ab09f5a90508fb8533b0b098b1b3ba9334f0564fb68a523357a82c
+-- hash: f439e4c6a00f7e821930119018d626976cbac2d324bc93a7f30cac7b9de9bc60
 
 name:           kernmantle
-version:        0.1.0.0
+version:        0.1.0.1
 synopsis:       Composing Applicatives, Monads, Comonads and Arrows into Arrows
 description:    Please see the README on GitHub at <https://github.com/YPares/kernmantle#readme>
 category:       Control
@@ -44,9 +44,9 @@ library
       base >=4.7 && <5
     , bifunctors
     , kan-extensions
-    , polytropos-core
+    , polytropos-core >=0.1.0.1
     , polytropos-plugin
-    , polytropos-profunctors
+    , polytropos-profunctors >=0.1.0.1
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -64,9 +64,9 @@ executable ex1
     , bifunctors
     , kan-extensions
     , kernmantle
-    , polytropos-core
+    , polytropos-core >=0.1.0.1
     , polytropos-plugin
-    , polytropos-profunctors
+    , polytropos-profunctors >=0.1.0.1
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -84,9 +84,9 @@ executable exBypass
     , bifunctors
     , kan-extensions
     , kernmantle
-    , polytropos-core
+    , polytropos-core >=0.1.0.1
     , polytropos-plugin
-    , polytropos-profunctors
+    , polytropos-profunctors >=0.1.0.1
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -106,9 +106,9 @@ executable exCli
     , kan-extensions
     , kernmantle
     , optparse-applicative
-    , polytropos-core
+    , polytropos-core >=0.1.0.1
     , polytropos-plugin
-    , polytropos-profunctors
+    , polytropos-profunctors >=0.1.0.1
     , polytropos-reader-soup
     , primitive
     , profunctors
@@ -129,9 +129,9 @@ executable exLenses
     , kernmantle
     , lens
     , lens-aeson
-    , polytropos-core
+    , polytropos-core >=0.1.0.1
     , polytropos-plugin
-    , polytropos-profunctors
+    , polytropos-profunctors >=0.1.0.1
     , polytropos-reader-soup
     , primitive
     , profunctors
@@ -150,9 +150,9 @@ executable exSoup
     , bifunctors
     , kan-extensions
     , kernmantle
-    , polytropos-core
+    , polytropos-core >=0.1.0.1
     , polytropos-plugin
-    , polytropos-profunctors
+    , polytropos-profunctors >=0.1.0.1
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2

@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.38.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 48bedf2aa49a92b26d7a43c7e7479823cf65fd0a7cd8d2392a11bbb45b8797e8
+-- hash: 60b2160a4ba92bc7a8391dd6298f0b7def853cdba01f3ed8aa08a4daded6020e
 
 name:           kernmantle-streams
-version:        0.1.0.0
+version:        0.1.0.1
 synopsis:       Process streams using a Rope
 description:    Please see the README on GitHub at <https://github.com/YPares/kernmantle#readme>
 category:       Control

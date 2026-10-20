@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.38.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 362f1de9ad38bf5c3ee00663e0044795b8c401c582423d7ea953aed5f1a32bdf
+-- hash: ca10a1a9e70421ac9c44aa1ce923031a5677bf66ceb84b62ee94dc2933226aa4
 
 name:           kernmantle-odes
-version:        0.1.0.0
+version:        0.1.0.1
 synopsis:       Kernmantle effect to solve Ordinary Differential Equation systems
 description:    Please see the README on GitHub at <https://github.com/YPares/kernmantle#readme>
 category:       Control

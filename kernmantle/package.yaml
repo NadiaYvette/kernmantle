@@ -1,5 +1,5 @@
 name:                kernmantle
-version:             0.1.0.0
+version:             0.1.0.1
 github:              "YPares/kernmantle"
 license:             BSD3
 author:              "Yves Parès"
@@ -22,10 +22,10 @@ dependencies:
 - transformers
 - safe-exceptions
 - primitive
-- polytropos-core
+- polytropos-core >= 0.1.0.1
 - polytropos-plugin
 - polytropos-reader-soup
-- polytropos-profunctors
+- polytropos-profunctors >= 0.1.0.1
 - kan-extensions
 
 ghc-options:

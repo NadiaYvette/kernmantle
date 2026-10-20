@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.38.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ebfbdffe47d87fa90966ec85554ebe983095ccae7cb9efc36e0fac024da1380f
+-- hash: 0ba9cdbf004689cdbf5804eec4d452862ff577f9faf14f1e25588f06fdcd22b2
 
 name:           kernmantle-batteries
-version:        0.1.0.0
+version:        0.1.0.1
 synopsis:       Several utilities to make real-life workflows with kernmantle
 description:    Please see the README on GitHub at <https://github.com/YPares/kernmantle#readme>
 category:       Control
