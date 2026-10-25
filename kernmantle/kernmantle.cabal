@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f439e4c6a00f7e821930119018d626976cbac2d324bc93a7f30cac7b9de9bc60
+-- hash: ad40d74e7efa2b9659399337dc1d738cd185715da853146368f785e6b4f2c58d
 
 name:           kernmantle
 version:        0.1.0.1
@@ -32,6 +32,7 @@ library
       Control.Kernmantle.Rope.Fusion
       Control.Kernmantle.Rope.Internal
       Control.Kernmantle.Rope.ReaderSoup
+      Control.Kernmantle.Rope.Switch
       Control.Kernmantle.Rope.Variant
       Data.Profunctor.EffFunctor
       Data.Profunctor.Trans
@@ -153,6 +154,26 @@ executable exSoup
     , polytropos-core >=0.1.0.1
     , polytropos-plugin
     , polytropos-profunctors >=0.1.0.1
+    , polytropos-reader-soup
+    , primitive
+    , profunctors >=5.5.2
+    , safe-exceptions
+    , transformers
+  default-language: Haskell2010
+
+executable exSwitch
+  main-is: examples/ExSwitch.hs
+  other-modules:
+      Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , bifunctors
+    , kan-extensions
+    , kernmantle
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2

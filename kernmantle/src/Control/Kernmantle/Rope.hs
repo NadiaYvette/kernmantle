@@ -66,8 +66,9 @@ module Control.Kernmantle.Rope
   , (&)
   , mkRope
   , runRope
-    -- * Polytropos Variant Routing and Fusion
+    -- * Polytropos Variant Routing, Switching, and Fusion
   , module Control.Kernmantle.Rope.Variant
+  , module Control.Kernmantle.Rope.Switch
   , module Control.Kernmantle.Rope.Fusion
   )
 where
@@ -96,6 +97,7 @@ import Control.Kernmantle.Arrow
 import Control.Kernmantle.Error
 import Control.Kernmantle.Rope.Fusion
 import Control.Kernmantle.Rope.Internal
+import Control.Kernmantle.Rope.Switch
 import Control.Kernmantle.Rope.Variant
 import Polytropos.Core (FieldIndex (..), SubRow (..))
 

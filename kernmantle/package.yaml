@@ -69,3 +69,9 @@ executables:
       - kernmantle
       - polytropos-core
       - polytropos-profunctors
+  exSwitch:
+    main: examples/ExSwitch.hs
+    dependencies:
+      - kernmantle
+      - polytropos-core
+      - polytropos-profunctors

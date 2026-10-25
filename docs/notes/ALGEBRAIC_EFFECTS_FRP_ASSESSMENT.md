@@ -152,15 +152,13 @@ The `polytropos-port` branch of `kernmantle` has already achieved significant mi
 4. **Coyoneda Arrow Fusion (`Control.Kernmantle.Rope.Fusion`)**:
    - Implemented pre- and post-composition fusion to minimize intermediate profunctor allocations.
 
-### Gap Analysis: What is Missing for Full FRP Support?
-
 | Capability | In Stock `kernmantle` | In Current `polytropos-port` | Needed for High-Frequency FRP |
 | :--- | :--- | :--- | :--- |
 | **Row Dispatch Complexity** | $O(N)$ Vinyl Peano lookup | $O(1)$ `SmallArray#` indexing | Complete for static handlers |
-| **Multi-Branch Choice** | Binary `Either` cascades | `branchRope` via `Variant` | Needs `polySwitch` with parameterized inputs |
+| **Multi-Branch Choice** | Binary `Either` cascades | `branchRope` & `polySwitch` | Complete via `Control.Kernmantle.Rope.Switch` |
 | **Coalgebraic Step Loop** | None (one-shot pipeline) | None | `MealyEff` / `FlatCoalgebra` extraction |
 | **Epoch-Staged Compilation** | None | None | `MSF m` kern adapter & staged switch |
-| **Ahead-of-Time Switch Analysis** | Blocked by `c -> Rope` | Blocked by closures | Dual `Variant sw` / `Record sw` templates |
+| **Ahead-of-Time Switch Analysis** | Blocked by `c -> Rope` | Resolved via `polySwitch` | Complete via dual `Variant sw` / `Record sw` templates |
 | **Causal Feedback Wire** | `ArrowLoop` (`mfix` danger) | Unchanged `ArrowLoop` | First-class `FeedbackEff` strand |
 | **State Continuity Across Modes** | None | None | `SubRow` projection of warm accumulators |
 
@@ -196,28 +194,43 @@ To systematically incorporate the transcript's findings into `polytropos-port`, 
 
 ### Tier 1: Core Combinators (Direct Extensions to `polytropos-port`)
 
-#### 1.1 First-Class Parameterized Open Variant Switching (`polySwitch`)
-Extend `Control.Kernmantle.Rope.Variant` (or create `Control.Kernmantle.Rope.Switch`) with a switch combinator where branch targets receive initialization payloads via their input channel rather than opaque closures:
+#### 1.1 First-Class Parameterized Open Variant Switching (`Control.Kernmantle.Rope.Switch`) [COMPLETED]
+Implemented in module `Control.Kernmantle.Rope.Switch` (re-exported via `Control.Kernmantle.Rope`) and fully verified in `examples/ExSwitch.hs`:
 
 ```haskell
 -- | Type family mapping sum row 'sw' to a product row of parameterized templates
-type family TemplateBranches mantle core a b (sw :: [(Symbol, Type)]) :: [(Symbol, Type)] where
-  TemplateBranches mantle core a b '[] = '[]
-  TemplateBranches mantle core a b ('(lbl, c) ': rest) =
-    '(lbl, Rope mantle core (c, a) b) ': TemplateBranches mantle core a b rest
+type family TemplateBranches (record :: RopeRec) (mantle :: [Strand]) (core :: BinEff) (a :: Type) (b :: Type) (sw :: SumRow) :: Row where
+  TemplateBranches record mantle core a b '[] = '[]
+  TemplateBranches record mantle core a b ((lbl ':= fs) ': rest) =
+    (lbl ':= Rope record mantle core (Record fs, a) b) ': TemplateBranches record mantle core a b rest
 
 -- | Statically inspectable, O(1) jump-table switch over Polytropos open variants
 polySwitch
-  :: (KnownRow sw, ArrowChoice core)
-  => Rope mantle core a (b, Maybe (Variant sw))
-  -> Record (TemplateBranches mantle core a b sw)
-  -> Rope mantle core a b
+  :: forall sw record mantle core a b. (ArrowSwitch core)
+  => Rope record mantle core a (b, Maybe (Variant sw))
+  -> Record (TemplateBranches record mantle core a b sw)
+  -> Rope record mantle core a b
+
+-- | Explicit branching when arrow produces Either b (Variant sw)
+polyBranch
+  :: forall sw record mantle core a b. (ArrowChoice core, ArrowSwitch core)
+  => Rope record mantle core a (Either b (Variant sw))
+  -> Record (TemplateBranches record mantle core a b sw)
+  -> Rope record mantle core a b
+
+-- | Single-branch parameterized template switch
+templateSwitch
+  :: (ArrowChoice core)
+  => Rope record mantle core a (b, Maybe c)
+  -> Rope record mantle core (c, a) b
+  -> Rope record mantle core a b
 ```
 
-**Benefits:**
-* Eliminates opaque closures `c -> Rope ...`.
+**Benefits & Achievements:**
+* Eliminates opaque closures `c -> Rope ...` by piping parameters via the input channel `(Record fs, a)`.
 * `SomeBinEff` can inspect every reachable branch at compile time by folding across the underlying `SmallArray#` in `Record`.
-* Runtime dispatch is a single $O(1)$ unboxed integer indexing operation.
+* Runtime dispatch is a single $O(1)$ unboxed integer indexing operation via `VariantRouter`.
+* Verified across pure functions `(->)` and monadic arrows `Kleisli IO` in executable `examples/ExSwitch.hs`.
 
 #### 1.2 First-Class Causal Feedback Strand (`Control.Kernmantle.Rope.Feedback`)
 Introduce a dedicated binary effect strand for causal feedback:
