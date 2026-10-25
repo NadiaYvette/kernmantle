@@ -75,3 +75,10 @@ executables:
       - kernmantle
       - polytropos-core
       - polytropos-profunctors
+  exFeedback:
+    main: examples/ExFeedback.hs
+    dependencies:
+      - kernmantle
+      - polytropos-core
+      - polytropos-profunctors
+

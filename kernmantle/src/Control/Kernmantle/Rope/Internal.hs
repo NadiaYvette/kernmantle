@@ -17,6 +17,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Control.Kernmantle.Rope.Internal where
 
@@ -36,6 +37,7 @@ import Data.Profunctor.Traversing
 import Data.Profunctor.Closed (Closed)
 import Data.Profunctor.Trans
 import GHC.Exts (Any)
+import GHC.OverloadedLabels (IsLabel(..))
 import GHC.TypeLits
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -45,6 +47,13 @@ import Control.Kernmantle.Arrow
 import Control.Kernmantle.Error
 import Polytropos.Core (FieldIndex (..), SubRow (..))
 
+
+-- | Label type for OverloadedLabels
+data Label (l :: Symbol) = Label
+  deriving (Eq, Ord, Show)
+
+instance (l ~ l') => IsLabel l (Label l') where
+  fromLabel = Label
 
 -- | The kind for all binary effects. First param is usually an input
 -- (contravariant) of the effect and second one an output (covariant).
@@ -253,6 +262,16 @@ mkRope = Rope . RopeRunner
 mapRopeCore :: (core a b -> core a' b') -> Rope r m core a b -> Rope r m core a' b'
 mapRopeCore f rope = mkRope $ f . runRope rope
 {-# INLINE mapRopeCore #-}
+
+-- | Tells that a strand of effects '(l,eff) is present in the rope
+type family InRope l (eff :: BinEff) rope where
+  InRope l eff (Rope record mantle core) = (record ~ Rec, FieldIndex l mantle eff)
+
+-- | Lift an effect into a 'Rope' targeting a named strand
+strand :: (InRope l eff (Rope r m c))
+       => Label l -> eff :-> Rope r m c
+strand l eff = mkRope $ \r -> weaveStrand (rgetf l r) eff
+{-# INLINE strand #-}
 
 -- | A 'Rope' that is "tight". Under Polytropos, tight and loose ropes are both backed by flat arrays.
 type TightRope = Rope Rec

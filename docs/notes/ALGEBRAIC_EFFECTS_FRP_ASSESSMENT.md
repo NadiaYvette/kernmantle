@@ -232,25 +232,35 @@ templateSwitch
 * Runtime dispatch is a single $O(1)$ unboxed integer indexing operation via `VariantRouter`.
 * Verified across pure functions `(->)` and monadic arrows `Kleisli IO` in executable `examples/ExSwitch.hs`.
 
-#### 1.2 First-Class Causal Feedback Strand (`Control.Kernmantle.Rope.Feedback`)
-Introduce a dedicated binary effect strand for causal feedback:
+#### 1.2 First-Class Causal Feedback Strand (`Control.Kernmantle.Rope.Feedback`) [COMPLETED]
+Introduced a dedicated binary effect strand ('FeedbackEff') and stateful Mealy arrow transformer ('Causal'):
 
 ```haskell
-data FeedbackEff (r :: Type -> Type -> Type) a b where
+-- | Binary effect strand carrying encapsulated internal state @s@
+data FeedbackEff (r :: BinEff) a b where
   Feedback :: !s -> r (a, s) (b, s) -> FeedbackEff r a b
+
+pattern FeedbackEff :: s -> r (a, s) (b, s) -> FeedbackEff r a b
+
+-- | First-class Mealy arrow transformer carrying internal state @s@
+data Causal (arr :: BinEff) a b where
+  Causal :: !s -> arr (a, s) (b, s) -> Causal arr a b
 
 -- | Weave causal feedback into a Rope computation
 causalFeedback
-  :: (FeedbackEff `InRope` mantle)
-  => s
-  -> Rope mantle core (a, s) (b, s)
-  -> Rope mantle core a b
+  :: (InRope l (FeedbackEff (Rope record mantle core)) (Rope record mantle core))
+  => Label l
+  -> s
+  -> Rope record mantle core (a, s) (b, s)
+  -> Rope record mantle core a b
 ```
 
-**Benefits:**
-* Completely circumvents `ArrowLoop` and `MonadFix`.
-* Eliminates runtime knot-tying and `<<loop>>` divergence on strict effects.
-* Supports linear single-pass static analysis in `SomeBinEff`.
+**Key Architectural Capabilities:**
+* **Category, Arrow, & ArrowChoice Instances**: Sequential composition `g . f` and parallel composition `f *** g` fuse internal states into strict product pairs `(s1, s2)`. Branching via `f +++ g` advances the active branch while keeping the inactive branch's accumulator warm across mode transitions.
+* **Streaming and Looping Combinators**: `causalLoopA`, `causalLoopRope`, `causalScan`, and `causalFold` allow direct causal stream evaluation without `ArrowLoop` or `MonadFix`.
+* **Discrete Stepping**: `stepCausal` (pure) and `stepCausalM` (monadic `Kleisli`) step the causal arrow single-shot, producing the computed output and the next `Causal` arrow with the evolved state.
+* **Strict IO Interpretation**: `interpFeedbackIO` and `newCausalIO` allocate a dedicated `IORef` during arrow construction, evaluating state strictly left-to-right and eliminating `<<loop>>` blackhole panics.
+* **Verification**: Thoroughly tested across 7 test suites in [`examples/ExFeedback.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExFeedback.hs).
 
 ---
 
@@ -315,9 +325,9 @@ Define standard static analyzers:
 
 1. **Retain Current Scope First:** Ensure the baseline `polytropos-port` branch is clean, fully verified, and synchronized with upstream.
 2. **Implement Tier 1 in `kernmantle`:**
-   - Add `Control.Kernmantle.Rope.Switch` (`polySwitch`, `TemplateBranches`).
-   - Add `Control.Kernmantle.Rope.Feedback` (`FeedbackEff`, `causalFeedback`).
-   - Create comprehensive unit tests and an executable demonstration (`examples/ExFRP.hs`).
+   - [x] Add `Control.Kernmantle.Rope.Switch` (`polySwitch`, `TemplateBranches`, verified in `examples/ExSwitch.hs`).
+   - [x] Add `Control.Kernmantle.Rope.Feedback` (`FeedbackEff`, `Causal`, `causalFeedback`, verified in `examples/ExFeedback.hs`).
+
 3. **Optional Package Addition (`kernmantle-frp`):**
    - If Dunai/Rhine dependencies are deemed too heavy for the base `kernmantle` package, introduce a dedicated sub-package `packages/kernmantle-frp` (or `frp/`) containing the `MSF` and `FlatCoalgebra` bridges.
 4. **Documentation & Benchmarks:**

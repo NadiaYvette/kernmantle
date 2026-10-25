@@ -66,9 +66,10 @@ module Control.Kernmantle.Rope
   , (&)
   , mkRope
   , runRope
-    -- * Polytropos Variant Routing, Switching, and Fusion
+    -- * Polytropos Variant Routing, Switching, Feedback, and Fusion
   , module Control.Kernmantle.Rope.Variant
   , module Control.Kernmantle.Rope.Switch
+  , module Control.Kernmantle.Rope.Feedback
   , module Control.Kernmantle.Rope.Fusion
   )
 where
@@ -95,28 +96,12 @@ import Prelude hiding (id, (.))
 
 import Control.Kernmantle.Arrow
 import Control.Kernmantle.Error
+import Control.Kernmantle.Rope.Feedback
 import Control.Kernmantle.Rope.Fusion
 import Control.Kernmantle.Rope.Internal
 import Control.Kernmantle.Rope.Switch
 import Control.Kernmantle.Rope.Variant
 import Polytropos.Core (FieldIndex (..), SubRow (..))
-
--- | Label type for OverloadedLabels
-data Label (l :: Symbol) = Label
-  deriving (Eq, Ord, Show)
-
-instance (l ~ l') => IsLabel l (Label l') where
-  fromLabel = Label
-
-
--- | Tells that a strand of effects '(l,eff) is present in the rope
-type family InRope l (eff :: BinEff) rope where
-  InRope l eff (Rope record mantle core) = (record ~ Rec, FieldIndex l mantle eff)
-
-strand :: (InRope l eff (Rope r m c))
-       => Label l -> eff :-> Rope r m c
-strand l eff = mkRope $ \r -> weaveStrand (rgetf l r) eff
-{-# INLINE strand #-}
 
 mapStrand :: forall l (eff :: BinEff) r m c. (InRope l eff (Rope r m c))
           => Label l -> (eff :-> eff) -> Rope r m c :-> Rope r m c
