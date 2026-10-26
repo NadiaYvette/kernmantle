@@ -1,0 +1,117 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.38.3.
+--
+-- see: https://github.com/sol/hpack
+
+name:           kernmantle-frp
+version:        0.1.0.1
+synopsis:       Functional Reactive Programming & Coalgebraic Engine for Kernmantle Ropes
+description:    Please see the README on GitHub at <https://github.com/YPares/kernmantle#readme>
+category:       Control
+homepage:       https://github.com/YPares/kernmantle#readme
+bug-reports:    https://github.com/YPares/kernmantle/issues
+author:         Yves Parès
+maintainer:     yves.pares@gmail.com
+copyright:      2026 Yves Parès
+license:        BSD3
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/YPares/kernmantle
+
+library
+  exposed-modules:
+      Control.Kernmantle.FRP
+      Control.Kernmantle.FRP.Analysis
+      Control.Kernmantle.FRP.Continuity
+      Control.Kernmantle.FRP.Mealy
+      Control.Kernmantle.FRP.MSF
+      Control.Kernmantle.Rope.Analysis
+      Control.Kernmantle.Rope.Continuity
+      Control.Kernmantle.Rope.Mealy
+      Control.Kernmantle.Rope.MSF
+  other-modules:
+      Paths_kernmantle_frp
+  hs-source-dirs:
+      src
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , kernmantle
+    , polytropos-core >=0.1.0.1
+    , polytropos-plugin
+    , polytropos-profunctors >=0.1.0.1
+    , primitive
+    , profunctors >=5.5.2
+  default-language: Haskell2010
+
+executable exAnalysis
+  main-is: examples/ExAnalysis.hs
+  other-modules:
+      Paths_kernmantle_frp
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , kernmantle
+    , kernmantle-frp
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
+    , primitive
+    , profunctors >=5.5.2
+  default-language: Haskell2010
+
+executable exContinuity
+  main-is: examples/ExContinuity.hs
+  other-modules:
+      Paths_kernmantle_frp
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , kernmantle
+    , kernmantle-frp
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
+    , primitive
+    , profunctors >=5.5.2
+  default-language: Haskell2010
+
+executable exMSF
+  main-is: examples/ExMSF.hs
+  other-modules:
+      Paths_kernmantle_frp
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , kernmantle
+    , kernmantle-frp
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
+    , primitive
+    , profunctors >=5.5.2
+  default-language: Haskell2010
+
+executable exMealy
+  main-is: examples/ExMealy.hs
+  other-modules:
+      Paths_kernmantle_frp
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , kernmantle
+    , kernmantle-frp
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
+    , primitive
+    , profunctors >=5.5.2
+  default-language: Haskell2010

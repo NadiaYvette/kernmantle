@@ -23,7 +23,7 @@ import Prelude hiding (id, (.))
 import Control.Arrow (Arrow(..), ArrowChoice(..), Kleisli(..), returnA)
 import Control.Category (Category(..))
 import Data.Functor.Identity (Identity(..), runIdentity)
-import Control.Kernmantle.Rope
+import Control.Kernmantle.FRP
 import Control.Kernmantle.Rope.Internal (pattern RNil)
 import Polytropos
 

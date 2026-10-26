@@ -38,7 +38,7 @@ import System.Exit (exitFailure)
 
 import Prelude hiding (id, (.))
 
-import Control.Kernmantle.Rope
+import Control.Kernmantle.FRP
 import Polytropos
   ( Record
   , Variant

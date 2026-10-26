@@ -27,7 +27,6 @@ dependencies:
 - polytropos-reader-soup
 - polytropos-profunctors >= 0.1.0.1
 - kan-extensions
-- containers
 
 ghc-options:
 - -fplugin=Polytropos.Plugin
@@ -82,31 +81,6 @@ executables:
       - kernmantle
       - polytropos-core
       - polytropos-profunctors
-  exMealy:
-    main: examples/ExMealy.hs
-    dependencies:
-      - kernmantle
-      - polytropos-core
-      - polytropos-profunctors
-  exMSF:
-    main: examples/ExMSF.hs
-    dependencies:
-      - kernmantle
-      - polytropos-core
-      - polytropos-profunctors
-  exContinuity:
-    main: examples/ExContinuity.hs
-    dependencies:
-      - kernmantle
-      - polytropos-core
-      - polytropos-profunctors
-  exAnalysis:
-    main: examples/ExAnalysis.hs
-    dependencies:
-      - kernmantle
-      - polytropos-core
-      - polytropos-profunctors
-      - containers
 
 
 

@@ -30,6 +30,7 @@ resolver: lts-16.11
 #   - wai
 packages:
 - kernmantle
+- frp
 - batteries
 - caching
 - streams

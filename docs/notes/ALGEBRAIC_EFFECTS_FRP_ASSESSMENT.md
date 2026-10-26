@@ -470,9 +470,16 @@ verifyAndCompileSwitchMSF
    - [x] Add `Control.Kernmantle.Rope.Analysis` (Pre-Flight Static Resource Analysis with `SomeBinEff`, verified in `examples/ExAnalysis.hs`).
 
 
-4. **Optional Package Addition (`kernmantle-frp`):**
-   - If Dunai/Rhine dependencies are deemed too heavy for the base `kernmantle` package, introduce a dedicated sub-package `packages/kernmantle-frp` (or `frp/`) containing the `MSF` and `FlatCoalgebra` bridges.
-5. **Documentation & Benchmarks:**
+5. **Dedicated Sub-package Separation (`kernmantle-frp`) [COMPLETED]:**
+   - Introduced dedicated sub-package `frp/` (`kernmantle-frp`) housing:
+     * `Control.Kernmantle.FRP` (top-level unified module)
+     * `Control.Kernmantle.Rope.MSF` & `Control.Kernmantle.FRP.MSF`
+     * `Control.Kernmantle.Rope.Mealy` & `Control.Kernmantle.FRP.Mealy`
+     * `Control.Kernmantle.Rope.Continuity` & `Control.Kernmantle.FRP.Continuity`
+     * `Control.Kernmantle.Rope.Analysis` & `Control.Kernmantle.FRP.Analysis`
+     * Executable verification suites: `exMSF`, `exMealy`, `exContinuity`, `exAnalysis`
+   - Core `kernmantle` package remains completely lean and lightweight, containing only the extensible rope arrow engine, `polySwitch`, causal `FeedbackEff` wire, `VariantRouter`, and Coyoneda fusion.
+6. **Documentation & Benchmarks:**
    - Add performance benchmarks comparing Vinyl vs. Polytropos in multi-branch switching and high-frequency stepping.
    - Document the 3-timescale separation in `docs/notes/KERNMANTLE_FRP_DESIGN.md`.
 

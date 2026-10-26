@@ -1,5 +1,6 @@
 packages:
   kernmantle
+  frp
   batteries
   /home/nyc/src/polytropos/packages/polytropos-core
   /home/nyc/src/polytropos/packages/polytropos-plugin
