@@ -73,6 +73,7 @@ module Control.Kernmantle.Rope
   , module Control.Kernmantle.Rope.Mealy
   , module Control.Kernmantle.Rope.MSF
   , module Control.Kernmantle.Rope.Continuity
+  , module Control.Kernmantle.Rope.Analysis
   , module Control.Kernmantle.Rope.Fusion
   )
 where
@@ -99,6 +100,7 @@ import Prelude hiding (id, (.))
 
 import Control.Kernmantle.Arrow
 import Control.Kernmantle.Error
+import Control.Kernmantle.Rope.Analysis
 import Control.Kernmantle.Rope.Continuity
 import Control.Kernmantle.Rope.Feedback
 import Control.Kernmantle.Rope.Fusion

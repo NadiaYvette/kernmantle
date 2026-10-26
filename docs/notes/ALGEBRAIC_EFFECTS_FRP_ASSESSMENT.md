@@ -413,10 +413,46 @@ continuousTelemetryMSF
 * **Telemetry & Real-Time Monitoring**: `continuousTelemetryMSF` exposes warm shared state records (e.g. altitude, velocity, position) on each tick without leaking private mode variables.
 * **Verification**: Thoroughly tested across 7 test suites in [`examples/ExContinuity.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExContinuity.hs).
 
-#### 3.2 Pre-Flight Resource Analysis with Polytropos `SomeBinEff`
-Define standard static analyzers:
-* **Sensor/Actuator Verification:** Accumulates required I/O hardware ports across all branches in `Record (TemplateBranches ...)`.
-* **Clock Domain Verification:** Validates that multi-rate Rhine clocks assigned to strands satisfy Nyquist bounds and scheduling constraints before initialization.
+#### 3.2 Pre-Flight Resource Analysis with Polytropos `SomeBinEff` [COMPLETED]
+
+Implemented in [`Control.Kernmantle.Rope.Analysis`](file:///home/nyc/src/kernmantle/kernmantle/src/Control/Kernmantle/Rope/Analysis.hs).
+
+Resolves the classic Arrowized FRP dynamic switching closure paradox (Yampa's `switch :: SF a (b, Event c) -> (c -> SF a b) -> SF a b`) by exploiting the duality between Polytropos open variant sum rows and template product records:
+1. **Concrete `SmallArray#` Template Storage**: All reachable mode branches are stored ahead-of-time in `Record (TemplateBranchesCore core a b sw)` backed by a flat unboxed array.
+2. **100% Whole-Graph Static Inspection**: Static resource analyzers fold their applicative functor `f` across the template record in $\mathcal{O}(N)$ without evaluating or ticking the reactive loop.
+3. **Zero Runtime Overhead**: Once pre-flight verification succeeds, `verifyAndCompileSwitchMSF` strips the static metadata and compiles directly into a bare `MSF m a b` with $\mathcal{O}(1)$ unboxed jump table dispatch.
+
+```haskell
+-- | Decomposed binary effect arrow carrying static metadata f, comonad w, and monad m
+newtype SomeBinEff f w m a b = SomeBinEff { unSomeBinEff :: f (w a -> m b) }
+
+-- | Binary effect arrow paired with static monoidal analysis metadata res
+data AnalyzedArrow res core a b = AnalyzedArrow
+  { arrowAnalysis :: !res
+  , arrowCore     :: !(core a b)
+  }
+
+-- | Whole-graph switch analysis across initial mode and all reachable template branches
+analyzeSwitchGraph
+  :: forall sw res core a b. (Monoid res)
+  => AnalyzedArrow res core a (b, Maybe (Variant sw))
+  -> Record (TemplateBranchesCore (AnalyzedArrow res core) a b sw)
+  -> res
+
+-- | Pre-flight validation gate: verifies graph and compiles to zero-overhead MSF
+verifyAndCompileSwitchMSF
+  :: forall sw res m a b. (Monad m, Monoid res)
+  => (res -> (Bool, [String]))
+  -> AnalyzedArrow res (MSF m) a (b, Maybe (Variant sw))
+  -> Record (TemplateBranchesCore (AnalyzedArrow res (MSF m)) a b sw)
+  -> Either [String] (MSF m a b)
+```
+
+**Domain Verifiers Provided:**
+* **Hardware Port Topology Verification (`verifyHardwareTopology`)**: Validates that all physical sensors and actuators required across all mode branches (e.g. GPS, Barometer, Pitot, Parachute) are physically present in the motherboard specification before initialization.
+* **Rhine Multi-Rate Nyquist Verification (`verifyClockDomains`)**: Validates that sampling clock frequencies satisfy the Nyquist-Shannon bound ($f_s \ge 2 \cdot f_{max}$) for every monitored continuous physical signal across all clock domains.
+* **Resource Budget Enforcement (`verifyResourceBudget`)**: Enforces hard upper bounds on maximum state footprint in bytes and number of concurrently allocated hardware ports.
+* **Verification**: Thoroughly tested across 7 test suites in [`examples/ExAnalysis.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExAnalysis.hs).
 
 ---
 
@@ -431,6 +467,7 @@ Define standard static analyzers:
    - [x] Add `Control.Kernmantle.Rope.MSF` (Dunai/MSF Bridge, verified in `examples/ExMSF.hs`).
 4. **Implement Tier 3 State Continuity & Graph Analysis:**
    - [x] Add `Control.Kernmantle.Rope.Continuity` (State Continuity across Switches, verified in `examples/ExContinuity.hs`).
+   - [x] Add `Control.Kernmantle.Rope.Analysis` (Pre-Flight Static Resource Analysis with `SomeBinEff`, verified in `examples/ExAnalysis.hs`).
 
 
 4. **Optional Package Addition (`kernmantle-frp`):**

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8d23990d2857ed73af6aef303e9d079f87df3f5ee2ada958b72a119fc621516a
+-- hash: 335d9bdf1677e5a0bc5680b831abd4c2920277feeb3bbb8464c3c5b09ddfdd50
 
 name:           kernmantle
 version:        0.1.0.1
@@ -29,6 +29,7 @@ library
       Control.Kernmantle.Arrow
       Control.Kernmantle.Error
       Control.Kernmantle.Rope
+      Control.Kernmantle.Rope.Analysis
       Control.Kernmantle.Rope.Continuity
       Control.Kernmantle.Rope.Feedback
       Control.Kernmantle.Rope.Fusion
@@ -48,6 +49,7 @@ library
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , polytropos-core >=0.1.0.1
     , polytropos-plugin
@@ -67,11 +69,33 @@ executable ex1
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core >=0.1.0.1
     , polytropos-plugin
     , polytropos-profunctors >=0.1.0.1
+    , polytropos-reader-soup
+    , primitive
+    , profunctors >=5.5.2
+    , safe-exceptions
+    , transformers
+  default-language: Haskell2010
+
+executable exAnalysis
+  main-is: examples/ExAnalysis.hs
+  other-modules:
+      Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , bifunctors
+    , containers
+    , kan-extensions
+    , kernmantle
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
     , polytropos-reader-soup
     , primitive
     , profunctors >=5.5.2
@@ -87,6 +111,7 @@ executable exBypass
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core >=0.1.0.1
@@ -108,6 +133,7 @@ executable exCli
       base >=4.7 && <5
     , bifunctors
     , bytestring
+    , containers
     , kan-extensions
     , kernmantle
     , optparse-applicative
@@ -129,6 +155,7 @@ executable exContinuity
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core
@@ -149,6 +176,7 @@ executable exFeedback
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core
@@ -170,6 +198,7 @@ executable exLenses
       aeson
     , base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , lens
@@ -193,6 +222,7 @@ executable exMSF
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core
@@ -213,6 +243,7 @@ executable exMealy
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core
@@ -233,6 +264,7 @@ executable exSoup
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core >=0.1.0.1
@@ -253,6 +285,7 @@ executable exSwitch
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core
@@ -273,6 +306,7 @@ executable exVariant
   build-depends:
       base >=4.7 && <5
     , bifunctors
+    , containers
     , kan-extensions
     , kernmantle
     , polytropos-core
