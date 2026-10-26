@@ -81,4 +81,11 @@ executables:
       - kernmantle
       - polytropos-core
       - polytropos-profunctors
+  exMealy:
+    main: examples/ExMealy.hs
+    dependencies:
+      - kernmantle
+      - polytropos-core
+      - polytropos-profunctors
+
 

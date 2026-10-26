@@ -266,25 +266,40 @@ causalFeedback
 
 ### Tier 2: Coalgebraic Step Engine & Dunai/Rhine Integration
 
-#### 2.1 Existential Mealy Machine Strand & Flat Coalgebra Extraction
-Create `Control.Kernmantle.Rope.Mealy`:
+#### 2.1 Existential Mealy Machine Strand & Flat Coalgebra Extraction (`Control.Kernmantle.Rope.Mealy`) [COMPLETED]
+Implemented existential Mealy machine strands, compiled flat coalgebras, and first-class state-lens extraction:
 
 ```haskell
 -- | Binary effect strand carrying hidden per-tick state
-data MealyEff eff a b where
-  MealyStrand :: !s -> (s -> a -> eff (b, s)) -> MealyEff eff a b
+data MealyEff (m :: Type -> Type) a b where
+  MealyStrand :: !s -> !(s -> a -> m (b, s)) -> MealyEff m a b
 
--- | Flat, compiled coalgebra with monolithic external state
-data FlatCoalgebra m a b = forall s. FlatCoalgebra
+-- | Flat, compiled coalgebra with existential monolithic state
+data FlatCoalgebra (m :: Type -> Type) a b = forall s. FlatCoalgebra
   { coalgInit :: !s
   , coalgStep :: !(s -> a -> m (b, s))
   }
+
+-- | First-class state lens focusing into local state components
+data StateLens s bigS = StateLens
+  { lensGet :: !(bigS -> s)
+  , lensSet :: !(s -> bigS -> bigS)
+  }
+
+-- | Flat coalgebra backed by a Polytropos SmallArray register bank
+data FlatRecordCoalgebra s_row m a b = FlatRecordCoalgebra
+  { recordCoalgInit :: !(Record s_row)
+  , recordCoalgStep :: !(Record s_row -> a -> m (b, Record s_row))
+  }
 ```
 
-During `entwine`, when stateful strands are composed:
-* Sequential composition $r_1 \ggg r_2$ fuses states into a pair $(s_1, s_2)$ or flat Polytropos row `Record (s1_row ++ s2_row)`.
-* Parallel composition $r_1 \mathbin{\&} r_2$ flattens states similarly.
-* During the tick loop, the runtime steps `coalgStep` directly, bypassing the `Rope` GADT completely.
+**Key Architectural Capabilities:**
+* **State Persistence & Rope Bypass**: Traverses and weaves the `Rope` GADT once during elaboration. High-frequency tick loops step `coalgStep` directly without touching or rebuilding the `Rope` AST.
+* **Arrow & ArrowChoice Coalgebra Engine**: Forms full `Category`, `Arrow`, `ArrowChoice`, `Profunctor`, `Strong`, and `Choice` instances. Sequential composition (`g . f`) and parallel composition (`f *** g`) fuse states into product pairs `(s1, s2)`, while choice composition (`f +++ g`) preserves warm state on inactive branches.
+* **Existential State-Lens Extraction**: `StateLens` (`idLens`, `fstLens`, `sndLens`, `composeLens`, `recordFieldLens`) focuses into nested state products or Polytropos register banks with \(O(1)\) unboxed slot indexing.
+* **Row-Polymorphic State Continuity across Switches**: `copyFieldState` and `preserveSharedState` transfer warm state fields (velocity, filters, integrators) across mode transitions without polluting input/output signal types.
+* **Interpreters & Conversion Bridges**: `extractMealy`, `interpMealyIO`, `interpCoalgebraIO`, and round-trip conversion bridges to `Control.Kernmantle.Rope.Feedback`.
+* **Verification**: Thoroughly tested across 7 test suites in [`examples/ExMealy.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExMealy.hs).
 
 #### 2.2 Dunai / MSF Adapter (`Control.Kernmantle.Rope.MSF`)
 Bridge `Rope` compilation with Dunai's `MSF m a b`:
@@ -327,10 +342,13 @@ Define standard static analyzers:
 2. **Implement Tier 1 in `kernmantle`:**
    - [x] Add `Control.Kernmantle.Rope.Switch` (`polySwitch`, `TemplateBranches`, verified in `examples/ExSwitch.hs`).
    - [x] Add `Control.Kernmantle.Rope.Feedback` (`FeedbackEff`, `Causal`, `causalFeedback`, verified in `examples/ExFeedback.hs`).
+3. **Implement Tier 2 Coalgebraic Engine in `kernmantle`:**
+   - [x] Add `Control.Kernmantle.Rope.Mealy` (`MealyEff`, `FlatCoalgebra`, `StateLens`, `FlatRecordCoalgebra`, verified in `examples/ExMealy.hs`).
+   - [ ] Add `Control.Kernmantle.Rope.MSF` (Dunai/MSF Bridge).
 
-3. **Optional Package Addition (`kernmantle-frp`):**
+4. **Optional Package Addition (`kernmantle-frp`):**
    - If Dunai/Rhine dependencies are deemed too heavy for the base `kernmantle` package, introduce a dedicated sub-package `packages/kernmantle-frp` (or `frp/`) containing the `MSF` and `FlatCoalgebra` bridges.
-4. **Documentation & Benchmarks:**
+5. **Documentation & Benchmarks:**
    - Add performance benchmarks comparing Vinyl vs. Polytropos in multi-branch switching and high-frequency stepping.
    - Document the 3-timescale separation in `docs/notes/KERNMANTLE_FRP_DESIGN.md`.
 
