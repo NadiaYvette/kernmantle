@@ -93,6 +93,12 @@ executables:
       - kernmantle
       - polytropos-core
       - polytropos-profunctors
+  exContinuity:
+    main: examples/ExContinuity.hs
+    dependencies:
+      - kernmantle
+      - polytropos-core
+      - polytropos-profunctors
 
 
 

@@ -354,12 +354,64 @@ polySwitchMSF
 
 ### Tier 3: State Continuity & Whole-Graph Verification
 
-#### 3.1 Row-Polymorphic State Continuity across Switches
-When `polySwitch` triggers a transition from `Mode1` to `Mode2`:
-* `Mode1` has internal state row `(shared_row | mode1_private)`.
-* `Mode2` has internal state row `(shared_row | mode2_private)`.
-* Using Polytropos's `SubRow` evidence (`projectRecord`), extract `shared_row` from the exiting state record and merge it with the initial values of `mode2_private`.
-* **Outcome:** PID controllers, Kalman filters, and moving averages remain warm across major mode shifts without polluting input/output types `a` and `b`.
+#### 3.1 Row-Polymorphic State Continuity across Switches (`Control.Kernmantle.Rope.Continuity`) [COMPLETED]
+Implemented first-class row-polymorphic state continuity across mode transitions in `Control.Kernmantle.Rope.Continuity` (re-exported via `Control.Kernmantle.Rope`), verified in `examples/ExContinuity.hs`:
+
+```haskell
+-- | Fast, vectorized shared sub-row transfer from source record to target record in O(|target| + |shared|)
+transferSharedState
+  :: forall shared orig target.
+     (SubRow shared orig, SubRow shared target)
+  => Record orig
+  -> Record target
+  -> Record target
+
+-- | Dynamic mode switch between two stateful modes preserving shared state fields
+switchContinuous2
+  :: forall shared s1 s2 m a b c.
+     (Monad m, SubRow shared s1, SubRow shared s2)
+  => FlatRecordCoalgebra s1 m a (b, Maybe c)
+  -> Record s2
+  -> (Record s2 -> (c, a) -> m (b, Record s2))
+  -> MSF m a b
+
+-- | An active continuous mode participating in open variant mode switching
+data ContinuousMode (shared :: Row) (sw :: SumRow) (m :: Type -> Type) a b =
+  forall s. (SubRow shared s) => ContinuousMode
+    { modeInitState :: !(Record s)
+    , modeStep      :: !(Record s -> a -> m (b, Maybe (Variant sw), Record s))
+    }
+
+-- | Parameterized template for target mode reachable via variant switching
+data ContinuousTemplate (shared :: Row) (sw :: SumRow) (m :: Type -> Type) (fs :: Row) a b =
+  forall s. (SubRow shared s) => ContinuousTemplate
+    { templateInitState :: !(Record s)
+    , templateStep      :: !(Record s -> (Record fs, a) -> m (b, Maybe (Variant sw), Record s))
+    }
+
+-- | Compile an open variant continuous mode network into a high-frequency MSF
+continuousMSF
+  :: forall shared sw m a b.
+     (Monad m)
+  => ContinuousMode shared sw m a b
+  -> Record (ContinuousTemplateBranches shared sw m a b sw)
+  -> MSF m a b
+
+-- | Monadic Stream Function that also emits the current warm shared state record
+continuousTelemetryMSF
+  :: forall shared sw m a b.
+     (Monad m)
+  => ContinuousMode shared sw m a b
+  -> Record (ContinuousTemplateBranches shared sw m a b sw)
+  -> MSF m a (b, Record shared)
+```
+
+**Key Architectural Capabilities:**
+* **Zero Input/Output Signal Pollution**: PID controllers, Kalman filters, and moving averages remain warm across mode transitions without exposing internal state into input/output signal channels @a@ and @b@.
+* **Vectorized Memory Copy**: Uses compile-time resolved `SubRow` evidence to transfer all shared fields in $O(|target| + |shared|)$ flat array copies without intermediate list allocations or type searches.
+* **Pair-wise & N-ary Open Variant Routing**: Seamlessly transitions between 2 modes via `switchContinuous2` or across arbitrary open variant sum rows via `continuousMSF` and `continuousTelemetryMSF`.
+* **Telemetry & Real-Time Monitoring**: `continuousTelemetryMSF` exposes warm shared state records (e.g. altitude, velocity, position) on each tick without leaking private mode variables.
+* **Verification**: Thoroughly tested across 7 test suites in [`examples/ExContinuity.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExContinuity.hs).
 
 #### 3.2 Pre-Flight Resource Analysis with Polytropos `SomeBinEff`
 Define standard static analyzers:
@@ -377,6 +429,8 @@ Define standard static analyzers:
 3. **Implement Tier 2 Coalgebraic Engine in `kernmantle`:**
    - [x] Add `Control.Kernmantle.Rope.Mealy` (`MealyEff`, `FlatCoalgebra`, `StateLens`, `FlatRecordCoalgebra`, verified in `examples/ExMealy.hs`).
    - [x] Add `Control.Kernmantle.Rope.MSF` (Dunai/MSF Bridge, verified in `examples/ExMSF.hs`).
+4. **Implement Tier 3 State Continuity & Graph Analysis:**
+   - [x] Add `Control.Kernmantle.Rope.Continuity` (State Continuity across Switches, verified in `examples/ExContinuity.hs`).
 
 
 4. **Optional Package Addition (`kernmantle-frp`):**
