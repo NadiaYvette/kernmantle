@@ -66,11 +66,12 @@ module Control.Kernmantle.Rope
   , (&)
   , mkRope
   , runRope
-    -- * Polytropos Variant Routing, Switching, Feedback, Mealy, and Fusion
+    -- * Polytropos Variant Routing, Switching, Feedback, Mealy, MSF, and Fusion
   , module Control.Kernmantle.Rope.Variant
   , module Control.Kernmantle.Rope.Switch
   , module Control.Kernmantle.Rope.Feedback
   , module Control.Kernmantle.Rope.Mealy
+  , module Control.Kernmantle.Rope.MSF
   , module Control.Kernmantle.Rope.Fusion
   )
 where
@@ -101,6 +102,7 @@ import Control.Kernmantle.Rope.Feedback
 import Control.Kernmantle.Rope.Fusion
 import Control.Kernmantle.Rope.Internal
 import Control.Kernmantle.Rope.Mealy
+import Control.Kernmantle.Rope.MSF
 import Control.Kernmantle.Rope.Switch
 import Control.Kernmantle.Rope.Variant
 import Polytropos.Core (FieldIndex (..), SubRow (..))

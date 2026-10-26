@@ -87,5 +87,12 @@ executables:
       - kernmantle
       - polytropos-core
       - polytropos-profunctors
+  exMSF:
+    main: examples/ExMSF.hs
+    dependencies:
+      - kernmantle
+      - polytropos-core
+      - polytropos-profunctors
+
 
 

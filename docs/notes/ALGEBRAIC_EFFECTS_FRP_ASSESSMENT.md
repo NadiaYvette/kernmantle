@@ -301,22 +301,54 @@ data FlatRecordCoalgebra s_row m a b = FlatRecordCoalgebra
 * **Interpreters & Conversion Bridges**: `extractMealy`, `interpMealyIO`, `interpCoalgebraIO`, and round-trip conversion bridges to `Control.Kernmantle.Rope.Feedback`.
 * **Verification**: Thoroughly tested across 7 test suites in [`examples/ExMealy.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExMealy.hs).
 
-#### 2.2 Dunai / MSF Adapter (`Control.Kernmantle.Rope.MSF`)
-Bridge `Rope` compilation with Dunai's `MSF m a b`:
+#### 2.2 Dunai / MSF Adapter (`Control.Kernmantle.Rope.MSF`) [COMPLETED]
+Bridged `Rope` compilation with Dunai's `MSF m a b` and Rhine continuous time-domain processing:
 
 ```haskell
+-- | Monadic stream function compatible with Dunai
+newtype MSF (m :: Type -> Type) a b = MSF
+  { unMSF :: a -> m (b, MSF m a b) }
+
 -- | Compile an entwined Rope directly into a high-frequency Monadic Stream Function
 compileRopeToMSF
   :: Monad m
-  => Rope '[] (Kleisli m) a b
+  => TightRope '[] (Kleisli m) a b
+  -> MSF m a b
+
+-- | Compile an entwined causal Rope carrying state @s@ directly into an MSF
+compileCausalRopeToMSF
+  :: Monad m
+  => s
+  -> TightRope '[] (Kleisli m) (a, s) (b, s)
   -> MSF m a b
 
 -- | Convert a FlatCoalgebra directly into an MSF
 coalgToMSF :: Monad m => FlatCoalgebra m a b -> MSF m a b
-coalgToMSF (FlatCoalgebra s0 step) = MSF \a -> do
-  (b, s1) <- step s0 a
-  pure (b, coalgToMSF (FlatCoalgebra s1 step))
+coalgToMSF (FlatCoalgebra s0 step) =
+  let loop !s = MSF \a -> do
+        (b, !s') <- step s a
+        pure (b, loop s')
+  in loop s0
+
+-- | Convert an MSF back into an existential FlatCoalgebra
+msfToCoalgebra :: Monad m => MSF m a b -> FlatCoalgebra m a b
+
+-- | Dynamic mode switching over Polytropos open variants in MSF streams
+polySwitchMSF
+  :: forall sw m a b. (Monad m)
+  => MSF m a (b, Maybe (Variant sw))
+  -> Record (TemplateBranchesCore (MSF m) a b sw)
+  -> MSF m a b
 ```
+
+**Key Architectural Capabilities:**
+* **3-Timescale Separation**: Elaboration and static analysis run once at startup. Steady-state ticks step raw `MSF m` functions with zero `Rope` GADT traversal or intermediate heap allocation.
+* **Arrow & ArrowChoice Hierarchy**: Full `Category`, `Arrow`, `ArrowChoice`, `Profunctor`, `Strong`, and `Choice` instances. Branching via `f +++ g` freezes and keeps the inactive branch's accumulator warm across mode alternations.
+* **ArrowSwitch Integration**: Implements `ArrowSwitch (MSF m)`, allowing `polySwitchMSF` to route mode transitions to pre-compiled template branches via an \(O(1)\) unboxed jump table.
+* **Causal Feedback without MonadFix**: `feedbackMSF` passes feedback states strictly without lazy tuple knots, completely preventing `<<loop>>` blackholes.
+* **Rhine / BearRiver Time-Domain Primitives**: Provides `TimedMSF m dt a b`, Euler numerical integration (`integrate`), continuous derivative estimation (`derivative`), and first-order exponential low-pass filtering (`lowPass`).
+* **Dunai Epoch Switching**: `epochSwitch` provides dynamic continuation-based event switching.
+* **Verification**: Thoroughly tested across 7 test suites in [`examples/ExMSF.hs`](file:///home/nyc/src/kernmantle/kernmantle/examples/ExMSF.hs).
 
 ---
 
@@ -344,7 +376,8 @@ Define standard static analyzers:
    - [x] Add `Control.Kernmantle.Rope.Feedback` (`FeedbackEff`, `Causal`, `causalFeedback`, verified in `examples/ExFeedback.hs`).
 3. **Implement Tier 2 Coalgebraic Engine in `kernmantle`:**
    - [x] Add `Control.Kernmantle.Rope.Mealy` (`MealyEff`, `FlatCoalgebra`, `StateLens`, `FlatRecordCoalgebra`, verified in `examples/ExMealy.hs`).
-   - [ ] Add `Control.Kernmantle.Rope.MSF` (Dunai/MSF Bridge).
+   - [x] Add `Control.Kernmantle.Rope.MSF` (Dunai/MSF Bridge, verified in `examples/ExMSF.hs`).
+
 
 4. **Optional Package Addition (`kernmantle-frp`):**
    - If Dunai/Rhine dependencies are deemed too heavy for the base `kernmantle` package, introduce a dedicated sub-package `packages/kernmantle-frp` (or `frp/`) containing the `MSF` and `FlatCoalgebra` bridges.

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c11ba23803880b8520e60f5b8f303da6d578444efd3882c0b8c69d87b36d0f4a
+-- hash: ed6d6bb3a4e8f7a85a48b5f60c6b7d080d2d3d86a2d81e02958f7a33b1cf59f5
 
 name:           kernmantle
 version:        0.1.0.1
@@ -33,6 +33,7 @@ library
       Control.Kernmantle.Rope.Fusion
       Control.Kernmantle.Rope.Internal
       Control.Kernmantle.Rope.Mealy
+      Control.Kernmantle.Rope.MSF
       Control.Kernmantle.Rope.ReaderSoup
       Control.Kernmantle.Rope.Switch
       Control.Kernmantle.Rope.Variant
@@ -161,6 +162,26 @@ executable exLenses
     , safe-exceptions
     , transformers
     , unordered-containers
+  default-language: Haskell2010
+
+executable exMSF
+  main-is: examples/ExMSF.hs
+  other-modules:
+      Paths_kernmantle
+  ghc-options: -fplugin=Polytropos.Plugin
+  build-depends:
+      base >=4.7 && <5
+    , bifunctors
+    , kan-extensions
+    , kernmantle
+    , polytropos-core
+    , polytropos-plugin
+    , polytropos-profunctors
+    , polytropos-reader-soup
+    , primitive
+    , profunctors >=5.5.2
+    , safe-exceptions
+    , transformers
   default-language: Haskell2010
 
 executable exMealy
